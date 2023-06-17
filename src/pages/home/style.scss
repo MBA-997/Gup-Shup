@@ -1,0 +1,32 @@
+$backgroundColor: #a7bcff;
+$darkBackgroundColor: #3e3c61;
+
+@mixin tablet {
+  @media screen and (max-width: 768px) {
+    @content;
+  }
+}
+
+.home {
+  background-color: $backgroundColor;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .container {
+    border: 1px solid white;
+    border-radius: 10px;
+    width: 65%;
+    height: 80%;
+    display: flex;
+    overflow: hidden;
+    @include tablet {
+      width: 90%;
+    }
+
+    .chat {
+      flex: 2;
+    }
+  }
+}
