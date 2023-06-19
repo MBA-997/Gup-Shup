@@ -21,9 +21,9 @@ function App() {
       <Routes>
         <Route path="/">
           <Route path="register" element={<Register />} />
-          <Route path="login" element={<Login />} />
+          <Route index path="login" element={<Login />} />
           <Route
-            path="home"
+            index
             element={
               <ProtectedRoute>
                 <Home />

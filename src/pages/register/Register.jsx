@@ -1,17 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./style.scss";
 import Add from "../../assets/addAvatar.png";
 
 import { auth, storage, db } from "./../../firebase";
-import { signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
+import { initializeApp } from "firebase/app";
 // import { getDatabase, set } from "firebase/database";
 
 const Register = () => {
+  const [value, setValue] = useState("");
+
   const [err, setError] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    googleProvider.addScope(
+      "https://www.googleapis.com/auth/contacts.readonly"
+    );
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,49 +35,51 @@ const Register = () => {
     const file = e.target[3].files[0];
 
     try {
-      console.log(email, password);
+      console.log(auth);
       const response = await signInWithEmailAndPassword(auth, email, password);
 
-      const storageRef = ref(storage, email);
+      print(response.user);
 
-      const uploadTask = uploadBytesResumable(storageRef, file);
+      // const storageRef = ref(storage, email);
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {},
-        (error) => {
-          setError(true);
-        },
-        () => {
-          // Handle successful uploads on complete
-          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-          getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            await updateProfile(response.user, {
-              displayName: displayName,
-              photoURL: downloadURL,
-            });
+      // const uploadTask = uploadBytesResumable(storageRef, file);
 
-            await setDoc(doc(db, "users", response.user.uid), {
-              uid: response.user.uid,
-              displayName,
-              email,
-              photoURL: downloadURL,
-            });
+      // uploadTask.on(
+      //   "state_changed",
+      //   (snapshot) => {},
+      //   (error) => {
+      //     setError(true);
+      //   },
+      //   () => {
+      //     // Handle successful uploads on complete
+      //     // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+      //     getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+      //       await updateProfile(response.user, {
+      //         displayName: displayName,
+      //         photoURL: downloadURL,
+      //       });
 
-            navigate("/home");
+      //       await setDoc(doc(db, "users", response.user.uid), {
+      //         uid: response.user.uid,
+      //         displayName,
+      //         email,
+      //         photoURL: downloadURL,
+      //       });
 
-            await setDoc(doc(db, "userChats", response.user.uid), {});
+      //       navigate("/");
 
-            // const db = getDatabase();
-            // set(ref(db, 'users/' + response.user.uid), {
-            //   uid: response.user.uid,
-            //   displayName: displayName,
-            //   email: email,
-            //   photoURL : downloadURL
-            // });
-          });
-        }
-      );
+      //       await setDoc(doc(db, "userChats", response.user.uid), {});
+
+      //       // const db = getDatabase();
+      //       // set(ref(db, 'users/' + response.user.uid), {
+      //       //   uid: response.user.uid,
+      //       //   displayName: displayName,
+      //       //   email: email,
+      //       //   photoURL : downloadURL
+      //       // });
+      //     });
+      //   }
+      // );
     } catch {
       setError(true);
     }
